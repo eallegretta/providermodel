@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>http://raw.github.com/eallegretta/providermodel/LICENSE.txt</licenseUrl>
+    <projectUrl>http://github.com/eallegretta/providermodel</projectUrl>
+    <iconUrl>http://raw.github.com/eallegretta/providermodel/logo/32x32.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <copyright>Copyright 2014</copyright>
+    <tags>ProviderModel providers provider prov</tags>
+  </metadata>
+</package>
