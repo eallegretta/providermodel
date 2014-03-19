@@ -178,8 +178,9 @@ namespace ProviderModel
         /// </summary>
         /// <param name="providerSettings">The provider settings.</param>
         /// <param name="provider">The provider.</param>
-        protected virtual void OnProviderInitialized(ProviderSettings providerSettings, TProvider provider)
+        protected virtual TProvider OnProviderInitialized(ProviderSettings providerSettings, TProvider provider)
         {
+            return provider;
         }
 
         /// <summary>
@@ -245,7 +246,7 @@ namespace ProviderModel
 
                         providerInstance.Initialize(providerInClosure.Name, settings);
 
-                        OnProviderInitialized(providerInClosure, providerInstance);
+                        providerInstance = OnProviderInitialized(providerInClosure, providerInstance);
 
                         return providerInstance;
                     },
