@@ -174,7 +174,7 @@ namespace ProviderModel
         }
 
         /// <summary>
-        /// Called when the provider has been initialized.
+        /// Called when the provider has been initialized. Use this method to perform after initialization code for the provider or even transform the provider.
         /// </summary>
         /// <param name="providerSettings">The provider settings.</param>
         /// <param name="provider">The provider.</param>
@@ -225,28 +225,23 @@ namespace ProviderModel
 
             foreach (ProviderSettings provider in Section.Providers)
             {
-                var providerInClosure = provider;
+                var providerSettings = provider;
 
                 var lazyProvider = new Lazy<TProvider>(
                     () =>
                     {
-                        var type = Type.GetType(providerInClosure.Type);
+                        var type = Type.GetType(providerSettings.Type);
 
                         if (type == null)
-                            ThrowProviderConfigurationException(providerInClosure);
-
-                        var providerInstance = CreateProviderInstance(type, providerInClosure);
-
-                        var settings = new NameValueCollection();
-
-                        foreach (string setting in providerInClosure.Parameters)
                         {
-                            settings[setting] = providerInClosure.Parameters[setting];
+                            ThrowProviderConfigurationException(providerSettings);
                         }
 
-                        providerInstance.Initialize(providerInClosure.Name, settings);
+                        var providerInstance = CreateProviderInstance(type, providerSettings);
 
-                        providerInstance = OnProviderInitialized(providerInClosure, providerInstance);
+                        providerInstance.Initialize(providerSettings.Name, providerSettings.Parameters);
+
+                        providerInstance = OnProviderInitialized(providerSettings, providerInstance);
 
                         return providerInstance;
                     },

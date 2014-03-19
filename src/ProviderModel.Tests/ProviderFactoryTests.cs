@@ -68,6 +68,18 @@ namespace ProviderModel.Tests
             {
                 yield return new KeyValuePair<string, Lazy<GreeterProviderBase>>("English", new Lazy<GreeterProviderBase>(() => new EnglishGreeterProvider { GreetName = "John Doe" }));
             }
+
+            protected override GreeterProviderBase OnProviderInitialized(System.Configuration.ProviderSettings providerSettings, GreeterProviderBase provider)
+            {
+                if (provider is SpanishGreeterProvider)
+                {
+                    string providerName = provider.Name;
+                    provider = new ArgentineGreeterProvider(provider as SpanishGreeterProvider);    
+                    provider.Initialize(providerName, providerSettings.Parameters);
+                }
+
+                return provider;
+            }
         }
 
         public class GreeterProviderFactory : ProviderFactory<GreeterProviderBase>

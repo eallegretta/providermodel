@@ -44,4 +44,19 @@ namespace ProviderModel.Tests.Providers
             return "Bonjour " + GreetName;
         }
     }
+
+    public class ArgentineGreeterProvider: GreeterProviderBase
+    {
+        private readonly SpanishGreeterProvider _spanishGreeter;
+
+        public ArgentineGreeterProvider(SpanishGreeterProvider spanishGreeter)
+        {
+            _spanishGreeter = spanishGreeter;
+        }
+
+        public override string Greet()
+        {
+            return "Que haces " + _spanishGreeter.Name;
+        }
+    }
 }
