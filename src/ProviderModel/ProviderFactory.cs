@@ -176,9 +176,10 @@ namespace ProviderModel
         /// <summary>
         /// Called when the provider has been initialized. Use this method to perform after initialization code for the provider or even transform the provider.
         /// </summary>
-        /// <param name="providerSettings">The provider settings.</param>
         /// <param name="provider">The provider.</param>
-        protected virtual TProvider OnProviderInitialized(ProviderSettings providerSettings, TProvider provider)
+        /// <param name="providerSettings">The provider settings.</param>
+        /// <returns>The provider</returns>
+        protected virtual TProvider OnProviderInitialized(TProvider provider, ProviderSettings providerSettings)
         {
             return provider;
         }
@@ -204,20 +205,22 @@ namespace ProviderModel
 
             if (Section == null || Section.Providers.Count == 0)
             {
-                providers = new List<KeyValuePair<string, Lazy<TProvider>>>(GetDefaultProvidersWithoutConfiguration());
+                var defaultProviders = GetDefaultProvidersWithoutConfiguration();
 
-                if (providers.Count == 0)
+                if (!defaultProviders.Any())
                 {
                     throw new ConfigurationErrorsException(string.Format(
                             "The {0} configuration section is not configured on the application configuration file",
                             ConfigurationSectionName));
                 }
-                else
+
+                foreach (var defaultProvider in defaultProviders)
                 {
-                    foreach (var provider in providers)
-                    {
-                        provider.Value.Value.Initialize(provider.Key, new NameValueCollection());
-                    }
+                    var provider = defaultProvider.Value.Value;
+                    var settings = new ProviderSettings(defaultProvider.Key, provider.GetType().FullName);
+                    provider.Initialize(defaultProvider.Key, settings.Parameters);
+                    provider = OnProviderInitialized(provider, settings);
+                    providers.Add(new KeyValuePair<string, Lazy<TProvider>>(defaultProvider.Key, new Lazy<TProvider>(() => provider)));
                 }
 
                 return providers;
@@ -241,7 +244,7 @@ namespace ProviderModel
 
                         providerInstance.Initialize(providerSettings.Name, providerSettings.Parameters);
 
-                        providerInstance = OnProviderInitialized(providerSettings, providerInstance);
+                        providerInstance = OnProviderInitialized(providerInstance, providerSettings);
 
                         return providerInstance;
                     },
