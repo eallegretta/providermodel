@@ -9,6 +9,19 @@ namespace ProviderModel.Tests
     public class ProviderFactoryTests
     {
         [Fact]
+        public void Should_throw_configuration_exception_when_no_configuration_is_set_and_not_default_providers_exist()
+        {
+            try
+            {
+                new GreeterProviderFactoryEmpty().GetDefaultProvider();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsType<ConfigurationErrorsException>(ex);
+            }
+        }
+
+        [Fact]
         public void Should_get_default_providers_when_no_configuration_is_set()
         {
             var factory = new GreeterProviderFactoryNoConfiguration();
@@ -77,6 +90,13 @@ namespace ProviderModel.Tests
             Assert.IsType<ArgentineGreeterProvider>(provider);
         }
 
+        public class GreeterProviderFactoryEmpty: ProviderFactory<GreeterProviderBase>
+        {
+            protected override string ConfigurationSectionName
+            {
+                get { return null; }
+            }
+        }
 
         public class GreeterProviderFactoryNoConfiguration : ProviderFactory<GreeterProviderBase>
         {

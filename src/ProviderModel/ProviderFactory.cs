@@ -207,11 +207,9 @@ namespace ProviderModel
             {
                 var defaultProviders = GetDefaultProvidersWithoutConfiguration();
 
-                if (!defaultProviders.Any())
+                if (defaultProviders == null || !defaultProviders.Any())
                 {
-                    throw new ConfigurationErrorsException(string.Format(
-                            "The {0} configuration section is not configured on the application configuration file",
-                            ConfigurationSectionName));
+                    throw new ConfigurationErrorsException(string.Format("There are no default providers configured"));
                 }
 
                 foreach (var defaultProvider in defaultProviders)
