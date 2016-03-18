@@ -20,7 +20,6 @@ namespace ProviderModel
         private IList<KeyValuePair<string, Lazy<TProvider>>> _providers;
         private ProviderSectionHandler _section;
         private TProvider _defaultProvider;
-        private bool _sectionInitialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProviderFactory{TProvider}"/> class.
@@ -57,15 +56,13 @@ namespace ProviderModel
         {
             get
             {
-                lock (_syncLock)
+                if (_section == null)
                 {
-                    if (_section == null)
+                    lock (_syncLock)
                     {
-                        _section = ConfigurationManager.GetSection(ConfigurationSectionName) as ProviderSectionHandler;
-
-                        if (_section != null)
+                        if (_section == null)
                         {
-                            _sectionInitialized = true;
+                            _section = ConfigurationManager.GetSection(ConfigurationSectionName) as ProviderSectionHandler;
                         }
                     }
                 }
@@ -85,9 +82,15 @@ namespace ProviderModel
         {
             get
             {
-                if (_providers == null || _sectionInitialized)
+                if (_providers == null)
                 {
-                    _providers = GetConfiguredProviders();
+                    lock (_syncLock)
+                    {
+                        if (_providers == null)
+                        {
+                            _providers = GetConfiguredProviders();
+                        }
+                    }
                 }
 
                 return _providers;
